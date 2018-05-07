@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
+
 import Person from './Component/Person/Person';
+
 
 class App extends Component {
 
   state = {
     persons: [
-      { name: 'max', age: 28},
-      { name: 'max2', age: 24},
-      { name: 'max3', age: 25}
+      { id:'asd', name: 'max', age: 28},
+      { id:'qwew', name: 'max2', age: 24},
+      { id:'fsafa', name: 'max3', age: 25}
     ],
     otherState: 'sondasodn',
     showPersons: false
@@ -16,18 +18,26 @@ class App extends Component {
 
   
 
-  nameChangeHandler = (event) => {
-    this.setState( {
-      persons: [
-        { name: 'newName', age: 28},
-        { name: event.target.value, age: 24},
-        { name: 'max3', age: 25}
-      ]
-    } ) 
+  nameChangeHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = {
+      ...this.state.persons[personIndex] //create new obj, and spread
+    };
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState( {persons: persons} ); 
   }
 
   deletePersonHandler = (personIndex) => {
-    const persons = this.state.persons;
+    //const persons = this.state.persons;
+    const persons = [...this.state.persons]; // add new array  a copy of persons
     persons.splice(personIndex, 1); /* remove one element from array */
     this.setState({
       persons: persons
@@ -44,13 +54,19 @@ class App extends Component {
   render() {
 
     const style = {
-      backgroundColor: 'white',
+      backgroundColor: 'green',
+      color:'white',
       font: 'inherit',
       border: '1px solid blue',
       padding: '8px',
-      cursor: 'pointer'
-    };
+      cursor: 'pointer',
+      // ':hover': {
+      //   backgroundColor: 'lightgreen',
+      //   color:'black'
+      // }
+    }; //inline
 
+    //list
     let persons = null;
 
     if (this.state.showPersons) {
@@ -60,7 +76,9 @@ class App extends Component {
             return <Person 
             click={()=>this.deletePersonHandler(index)} /* this.dsd.bind(this.asd) pengganti*/
             name={person.name} 
-            age={person.age}/>
+            age={person.age}
+            key={person.id}
+            changed={(event) => this.nameChangeHandler(event, person.id)}/> //long list very not eficient so we need key
           })}
           {/* <Person 
             name={this.state.persons[0].name} 
@@ -78,11 +96,27 @@ class App extends Component {
 
         </div>
       );
+      style.backgroundColor = 'red';
+      // style[':hover'] = {
+      //   backgroundColor: 'salmon',
+      //   color: 'black'
+      // }
+    }
+
+    //let classes = ['red', 'bold'].join(' '); // "red bold"
+    const classes =[];
+    if (this.state.persons.length <= 2) {
+      classes.push('red'); //clasess = ['red]
+    }
+    if (this.state.persons.length <=1) {
+      classes.push('bold'); //clasess= [bold red]
     }
 
     return (
+     
       <div className="App">
         <h1>Tes</h1>
+        <p className={classes.join(' ')}>asdaaaaadasdasd</p>
         <button 
           style={style}
           onClick={ () => this.togglePersonHandler()}>
@@ -115,6 +149,7 @@ class App extends Component {
           
 
       </div>
+      
     );
   }
 }
